@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Payment Status — Powered by GAIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const Eagle = () => (
+      <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+        <path d="M32 6c-2 4-4.5 7-9 9-3.5 1.5-7 1.8-10 1.8 3 5 8 8 14 9-3 2.5-6.5 4-10 4 4 4 9 6.5 14.5 6.5 3 0 6-.5 8.5-1.5C36 38 32 41 28 42c5 2 11 1.5 16-1-1.5 4-4 7.5-8 10 6 0 11.5-2.5 15.5-7-1 5-3.5 9-7 12 8-2 13.5-9 15-17.5C61 32 60 26 57 21c-3-5-8-9-14-12-3.5-1.5-7-2.5-11-3z" fill="#00AEEF"/>
+      </svg>
+    );
+
+    function StatusPage() {
+      const params = new URLSearchParams(window.location.search);
+      const orderIdFromUrl = params.get('order_id') || params.get('orderId') || '';
+      const statusHint = (params.get('status') || '').toUpperCase();
+
+      const [state, setState] = useState({
+        loading: true,
+        bucket: 'pending',
+        status: statusHint || 'PENDING',
+        orderId: orderIdFromUrl,
+        amount: '',
+        currency: '',
+        paymentMethod: '',
+        txn: '',
+        error: null,
+      });
+
+      useEffect(() => {
+        let cancelled = false;
+        let attempts = 0;
+
+        async function poll() {
+          if (!orderIdFromUrl) {
+            setState(s => ({ ...s, loading: false, bucket: 'failure', error: 'No order_id in return URL.' }));
+            return;
+          }
+          try {
+            const r = await fetch(`/api/order-status/${encodeURIComponent(orderIdFromUrl)}`);
+            const data = await r.json();
+            if (cancelled) return;
+
+            if (!r.ok) {
+              setState(s => ({ ...s, loading: false, bucket: 'failure', error: data?.details?.error_message || 'Could not fetch status' }));
+              return;
+            }
+
+            // If still pending, poll a few more times
+            if (data.bucket === 'pending' && attempts < 5) {
+              attempts++;
+              setTimeout(poll, 2000);
+              setState(s => ({ ...s, status: data.status }));
+              return;
+            }
+
+            setState({
+              loading: false,
+              bucket: data.bucket,
+              status: data.status,
+              orderId: data.order_id,
+              amount: data.amount,
+              currency: data.currency,
+              paymentMethod: data.payment_method || data.payment_method_type || '—',
+              txn: data.txn_uuid || '',
+              error: null,
+            });
+          } catch (e) {
+            if (cancelled) return;
+            setState(s => ({ ...s, loading: false, bucket: 'failure', error: e.message }));
+          }
+        }
+        poll();
+        return () => { cancelled = true; };
+      }, []);
+
+      if (state.loading) {
+        return (
+          <div className="status-screen">
+            <div className="status-card">
+              <div className="spinner-lg" />
+              <h1>Confirming your payment</h1>
+              <p className="desc">
+                We're checking the result with Juspay. This usually takes a couple of seconds.
+              </p>
+              <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:12, color:'var(--ink-500)'}}>
+                <Eagle /> <span>Powered by <strong style={{color:'var(--barclays-blue)'}}>GAIA</strong></span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      const meta = ({
+        success: { title: 'Payment successful', desc: "Thanks — your order has been confirmed.", iconCls: 'success', icon: '✓' },
+        failure: { title: 'Payment unsuccessful', desc: 'Something went wrong. No money has been charged.', iconCls: 'failure', icon: '✕' },
+        pending: { title: 'Payment pending', desc: "We're still waiting for confirmation. We'll update you shortly.", iconCls: 'pending', icon: '…' },
+      })[state.bucket] || { title: 'Status', desc: '', iconCls: 'pending', icon: '?' };
+
+      return (
+        <div className="status-screen">
+          <div className="status-card">
+            <div className={`status-icon ${meta.iconCls}`}>
+              <div style={{fontSize: 38, fontWeight: 800, lineHeight: 1}}>{meta.icon}</div>
+            </div>
+            <h1>{meta.title}</h1>
+            <p className="desc">{meta.desc}</p>
+
+            <div className="receipt">
+              <div className="row"><span className="k">Order ID</span><span className="v">{state.orderId || '—'}</span></div>
+              <div className="row"><span className="k">Status</span><span className="v">{state.status}</span></div>
+              {state.amount && <div className="row"><span className="k">Amount</span><span className="v">{state.amount} {state.currency}</span></div>}
+              {state.paymentMethod && <div className="row"><span className="k">Method</span><span className="v">{state.paymentMethod}</span></div>}
+              {state.txn && <div className="row"><span className="k">Txn UUID</span><span className="v" style={{fontFamily:'var(--font-mono)', fontSize:11}}>{state.txn}</span></div>}
+            </div>
+
+            {state.error && (
+              <div style={{padding:'10px 14px', background:'var(--danger-bg)', color:'var(--danger)', borderRadius:8, fontSize:13, marginBottom:16}}>
+                {state.error}
+              </div>
+            )}
+
+            <div className="actions">
+              <a className="btn" href="/">Back to checkout</a>
+              {state.bucket === 'failure' && <a className="btn primary" href="/">Try again</a>}
+              {state.bucket === 'success' && <a className="btn primary" href="/">View receipt</a>}
+            </div>
+
+            <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:12, color:'var(--ink-500)', marginTop:24}}>
+              <Eagle /> <span>Powered by <strong style={{color:'var(--barclays-blue)'}}>GAIA</strong> · Barclayyard</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<StatusPage />);
+  </script>
+</body>
+</html>
