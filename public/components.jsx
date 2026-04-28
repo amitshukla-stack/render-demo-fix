@@ -60,6 +60,7 @@ const PPRO_CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'CHF', symbol: 'Fr', name: 'Swiss Franc' },
+  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
   { code: 'SEK', symbol: 'kr', name: 'Swedish Krona' },
   { code: 'NOK', symbol: 'kr', name: 'Norwegian Krone' },
   { code: 'DKK', symbol: 'kr', name: 'Danish Krone' },
