@@ -11,6 +11,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "customerEmail": "john.wick@example.com",
   "customerPhone": "8460767724",
   "customerId": "AmitSh",
+  "countryCode": "GBR",
   "description": "PROP-123456",
   "gatewayReferenceId": "gaia_ppro",
   "paymentPageClientId": "picasso",
@@ -148,6 +149,7 @@ function GaiaTweaks({ tweaks, setTweak }) {
         <TweakText label="Email" value={tweaks.customerEmail} onChange={(v) => setTweak('customerEmail', v)} />
         <TweakText label="Phone" value={tweaks.customerPhone} onChange={(v) => setTweak('customerPhone', v)} />
         <TweakText label="Customer ID" value={tweaks.customerId} onChange={(v) => setTweak('customerId', v)} />
+        <TweakText label="Country Code (ISO 3166-1 alpha-3)" value={tweaks.countryCode} onChange={(v) => setTweak('countryCode', v.toUpperCase())} />
       </TweakSection>
 
       <TweakSection title="Order">
@@ -213,6 +215,7 @@ function App() {
     customer_id: tweaks.customerId,
     customer_email: tweaks.customerEmail,
     customer_phone: tweaks.customerPhone,
+    billing_address_country_code_iso: tweaks.countryCode || 'GBR',
     action: 'paymentPage',
     currency,
     description: tweaks.description,
@@ -252,6 +255,7 @@ function App() {
           customer_id: tweaks.customerId,
           customer_email: tweaks.customerEmail,
           customer_phone: tweaks.customerPhone,
+          country_code: tweaks.countryCode || 'GBR',
           description: tweaks.description,
           gateway_reference_id: tweaks.gatewayReferenceId,
           payment_page_client_id: tweaks.paymentPageClientId,
@@ -450,6 +454,10 @@ function App() {
               <div className="field">
                 <label>Customer ID</label>
                 <input value={tweaks.customerId} onChange={(e) => setTweak('customerId', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>Country Code (ISO 3166-1 alpha-3)</label>
+                <input value={tweaks.countryCode} onChange={(e) => setTweak('countryCode', e.target.value.toUpperCase())} placeholder="e.g., CHN, USA, GBR" maxLength={3} />
               </div>
             </div>
 
