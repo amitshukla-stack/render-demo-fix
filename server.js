@@ -54,6 +54,65 @@ function generateOrderId() {
   return `gaia_${ts}_${rand}`.slice(0, 21);
 }
 
+// Currency-Based Payment Filtering 
+const CURRENCY_PM_MAP = {
+  'EUR': [
+    { type: 'NB', methods: ['NB_IDEAL', 'NB_BANCONTACT', 'NB_TRUSTLY'] },
+    { type: 'WALLET', methods: ['ALIPAY', 'MBWAY', 'SATISPAY', 'WERO'] }
+  ],
+  'PLN': [
+    { type: 'WALLET', methods: ['BLIK'] }
+  ],
+  'DKK': [
+    { type: 'NB', methods: ['NB_TRUSTLY'] }
+  ],
+  'GBP': [
+    { type: 'NB', methods: ['NB_TRUSTLY'] },
+    { type: 'WALLET', methods: ['ALIPAY'] }
+  ],
+  'NOK': [
+    { type: 'NB', methods: ['NB_TRUSTLY'] }
+  ],
+  'SEK': [
+    { type: 'NB', methods: ['NB_TRUSTLY'] }
+  ],
+  'AUD': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'CAD': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'CHF': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'CNY': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'HKD': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'JPY': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'NZD': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'SGD': [{ type: 'WALLET', methods: ['ALIPAY'] }],
+  'USD': [{ type: 'WALLET', methods: ['ALIPAY'] }]
+};
+
+function buildPaymentFilter(currency) {
+  const upperCurrency = (currency || '').toUpperCase();
+  const mapping = CURRENCY_PM_MAP[upperCurrency];
+
+  if (!mapping) {
+    return {
+      allowDefaultOptions: false,
+      options: [
+        { paymentMethodType: 'NB', enable: false },
+        { paymentMethodType: 'WALLET', enable: false }
+      ]
+    };
+  }
+
+  const options = mapping.map(item => ({
+    paymentMethodType: item.type,
+    paymentMethods: item.methods,
+    enable: true
+  }));
+
+  return {
+    allowDefaultOptions: false,  
+    options
+  };
+}
+
 // ----- POST /api/create-session -----
 app.post('/api/create-session', async (req, res) => {
   try {
@@ -81,6 +140,8 @@ app.post('/api/create-session', async (req, res) => {
     const order_id = generateOrderId();
     const return_url = `${PUBLIC_BASE_URL}/return`;
 
+    const payment_filter = buildPaymentFilter(currency);
+
     const payload = {
       order_id,
       amount: parseFloat(amount).toFixed(2),
@@ -97,6 +158,7 @@ app.post('/api/create-session', async (req, res) => {
       payment_page_client_id: clientId,
       return_url,
       'metadata.JUSPAY:gateway_reference_id': gateway_reference_id,
+      payment_filter, 
     };
 
     const headers = {
