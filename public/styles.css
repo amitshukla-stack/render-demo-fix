@@ -390,6 +390,14 @@ input, select, textarea { font-family: inherit; }
   border-radius: 50%;
   display: grid; place-items: center;
 }
+.powered-by .gaia-logo {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
 
 /* ---------- Status timeline ---------- */
 .timeline-card {

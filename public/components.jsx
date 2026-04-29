@@ -41,16 +41,7 @@ const BarclaysEagle = ({ size = 28, color = '#00AEEF' }) => (
 
 const PoweredByGAIA = () => (
   <div className="powered-by">
-    <div className="row">
-      <div>
-        <div className="label">Powered by</div>
-        <div className="name">GAIA</div>
-        <div className="tag">Barclayyard's payments fabric</div>
-      </div>
-      <div className="eagle">
-        <BarclaysEagle size={28} color="#00AEEF" />
-      </div>
-    </div>
+    <img src="/barclaysGAIA.svg" alt="Powered by GAIA" className="gaia-logo" />
   </div>
 );
 
