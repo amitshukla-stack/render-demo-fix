@@ -39,7 +39,7 @@ function loadApiKey() {
 }
 const JUSPAY_API_KEY = loadApiKey();
 const JUSPAY_MERCHANT_ID = process.env.JUSPAY_MERCHANT_ID || 'picasso';
-const JUSPAY_CLIENT_ID = process.env.JUSPAY_CLIENT_ID || 'picasso';
+const JUSPAY_CLIENT_ID = process.env.JUSPAY_CLIENT_ID || 'testamit333';
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
 
 // Build Basic auth header: base64("apiKey:")

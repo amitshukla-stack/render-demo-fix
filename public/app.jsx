@@ -14,7 +14,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "countryCode": "GBR",
   "description": "PROP-123456",
   "gatewayReferenceId": "gaia_ppro",
-  "paymentPageClientId": "picasso",
+  "paymentPageClientId": "testamit333",
   "showPayloadByDefault": true,
   "iframeMode": false
 }/*EDITMODE-END*/;
