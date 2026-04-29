@@ -19,8 +19,11 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    const GaiaLogo = () => (
-      <img src="/barclaysGAIA.svg" alt="GAIA" style={{height: 20, width: 'auto'}} />
+    const Eagle = () => (
+      <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+        <path d="M32 6c-2 4-4.5 7-9 9-3.5 1.5-7 1.8-10 1.8 3 5 8 8 14 9-3 2.5-6.5 4-10 4 4 4 9 6.5 14.5 6.5 3 0 6-.5 8.5-1.5C36 38 32 41 28 42c5 2 11 1.5 16-1-1.5 4-4 7.5-8 10 6 0 11.5-2.5 15.5-7-1 5-3.5 9-7 12 8-2 13.5-9 15-17.5C61 32 60 26 57 21c-3-5-8-9-14-12-3.5-1.5-7-2.5-11-3z" fill="#00AEEF"/>
+        <circle cx="46" cy="22" r="2.2" fill="#fff" />
+      </svg>
     );
 
     function StatusPage() {
@@ -97,7 +100,7 @@
                 We're checking the result with Juspay. This usually takes a couple of seconds.
               </p>
               <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:12, color:'var(--ink-500)'}}>
-                <GaiaLogo /> <span>Powered by <strong style={{color:'var(--barclays-blue)'}}>GAIA</strong></span>
+                <Eagle /> <span>Powered by <strong style={{color:'var(--barclays-blue)'}}>GAIA</strong></span>
               </div>
             </div>
           </div>
@@ -140,7 +143,7 @@
             </div>
 
             <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:12, color:'var(--ink-500)', marginTop:24}}>
-              <GaiaLogo /> <span>Powered by <strong style={{color:'var(--barclays-blue)'}}>GAIA</strong> · Barclayard</span>
+              <Eagle /> <span>Powered by <strong style={{color:'var(--barclays-blue)'}}>GAIA</strong> · Barclayyard</span>
             </div>
           </div>
         </div>
