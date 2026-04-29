@@ -219,7 +219,7 @@ function App() {
     action: 'paymentPage',
     currency,
     description: tweaks.description,
-    payment_page_client_id: tweaks.paymentPageClientId || 'picasso',
+    payment_page_client_id: tweaks.paymentPageClientId || 'testamit333',
     return_url: typeof window !== 'undefined' ? `${window.location.origin}/return` : 'https://your-app.onrender.com/return',
     'metadata.JUSPAY:gateway_reference_id': tweaks.gatewayReferenceId,
   }), [orderId, amount, currency, tweaks]);
@@ -428,7 +428,7 @@ function App() {
               </div>
               <div className="field full">
                 <label>Payment page client ID</label>
-                <input value={tweaks.paymentPageClientId} onChange={(e) => setTweak('paymentPageClientId', e.target.value)} placeholder="picasso" />
+                <input value={tweaks.paymentPageClientId} onChange={(e) => setTweak('paymentPageClientId', e.target.value)} placeholder="testamit333" />
               </div>
             </div>
 
