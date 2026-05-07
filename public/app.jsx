@@ -262,7 +262,7 @@ function App() {
         }),
       });
       const data = await r.json();
-      updateLog(logId, { status: r.status, response: data });
+      updateLog(logId, { status: r.status, response: data, ...(data.request_payload ? { request: data.request_payload } : {}) });
       setResponse(data);
       if (!r.ok || !data.payment_links?.web) {
         const msg = data?.details?.error_info?.user_message || data?.details?.error_message || data?.error || 'Failed to create session';
@@ -525,7 +525,7 @@ function App() {
 
             <PayloadCard
               openDefault={tweaks.showPayloadByDefault}
-              request={requestPayload}
+              request={response?.request_payload || requestPayload}
               response={response}
             />
           </div>
