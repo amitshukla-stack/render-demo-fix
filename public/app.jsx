@@ -173,7 +173,7 @@ function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   const [amount, setAmount] = useState('49.99');
-  const [currency, setCurrency] = useState('GBP');
+  const [currency, setCurrency] = useState('EUR');
   const [orderId] = useState(() => `gaia_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36).slice(-4)}`.slice(0, 21));
 
   const [stage, setStage] = useState('created');
